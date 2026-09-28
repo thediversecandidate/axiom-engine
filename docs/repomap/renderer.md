@@ -1,6 +1,21 @@
 # Module `renderer` — public API
 Depends on: core, math
 
+## `modules/renderer/include/axiom/renderer/gpu_allocator.hpp` — GPU memory allocation through the Vulkan Memory Allocator (CONVENTIONS §1).
+- `class GpuAllocator`
+  /// @owns the VmaAllocator; move-only.
+  /// @lifetime destroy every allocation made with it first; must be destroyed before the device.
+  /// @errors create() fails with kGpu if vmaCreateAllocator fails.
+  - `[[nodiscard]] static core::Result<GpuAllocator> create(const VulkanInstance &instance, const VulkanDevice &device)`
+  - `GpuAllocator() = default`
+  - `GpuAllocator(GpuAllocator &&other) noexcept`
+  - `GpuAllocator &operator=(GpuAllocator &&other) noexcept`
+  - `GpuAllocator(const GpuAllocator &) = delete`
+  - `GpuAllocator &operator=(const GpuAllocator &) = delete`
+  - `~GpuAllocator()`
+  - `[[nodiscard]] VmaAllocator handle() const noexcept`
+  - `VmaAllocator allocator_ = VK_NULL_HANDLE`
+
 ## `modules/renderer/include/axiom/renderer/module_info.hpp` — Stage 0 placeholder API for the renderer module. Allowed dependencies: axiom::core axiom::math.
 - `[[nodiscard]] std::string_view moduleName() noexcept`
   /// Name of this module, used by the Stage 0 smoke test.
