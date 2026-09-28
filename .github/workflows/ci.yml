@@ -15,25 +15,13 @@ jobs:
     outputs:
       ref: ${{ steps.image.outputs.ref }}
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
       - id: image
         name: Build or reuse the CI image, publish to GHCR, output its digest
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          tag=$(cat ci/Dockerfile ci/packages.txt scripts/requirements.txt | sha256sum | cut -c1-16)
-          image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/axiom-ci"
-          echo "$GH_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-          if ! docker pull "$image:$tag" > /dev/null 2>&1; then
-            docker build -t "$image:$tag" -f ci/Dockerfile .
-            docker push "$image:$tag"
-          fi
-          ref=$(docker inspect --format '{{index .RepoDigests 0}}' "$image:$tag")
-          echo "ref=$ref" >> "$GITHUB_OUTPUT"
-          docker run --rm "$image:$tag" cat /opt/axiom-ci/packages.lock > packages.lock
-          echo "CI image: $ref"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        run: python3 scripts/ci_annotate.py "CI image" image.log -- bash ci/build_image.sh
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: packages-lock
           path: packages.lock
@@ -52,15 +40,15 @@ jobs:
       matrix:
         preset: [debug, asan-ubsan, release]
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
       - name: Configure (first configure in the image, empty dependency cache)
-        run: python3 scripts/run_quiet.py --timeout 1800 -- cmake --preset ${{ matrix.preset }}
+        run: python3 scripts/ci_annotate.py "configure ${{ matrix.preset }}" configure.log -- python3 scripts/run_quiet.py --timeout 1800 -- cmake --preset ${{ matrix.preset }}
       - name: Build
-        run: python3 scripts/run_quiet.py --timeout 3600 -- cmake --build --preset ${{ matrix.preset }}
+        run: python3 scripts/ci_annotate.py "build ${{ matrix.preset }}" build.log -- python3 scripts/run_quiet.py --timeout 3600 -- cmake --build --preset ${{ matrix.preset }}
       - name: Test
-        run: python3 scripts/run_quiet.py --timeout 1800 -- ctest --preset ${{ matrix.preset }}
+        run: python3 scripts/ci_annotate.py "test ${{ matrix.preset }}" test.log -- python3 scripts/run_quiet.py --timeout 1800 -- ctest --preset ${{ matrix.preset }}
       - if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: logs-${{ matrix.preset }}
           path: build/logs/
@@ -75,8 +63,8 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
       - name: Definition-of-Done checks
-        run: python3 scripts/check_all.py
+        run: python3 scripts/ci_annotate.py "check_all" check_all.log -- python3 scripts/check_all.py
       - name: Lavapipe + validation layer
-        run: python3 scripts/check_vulkan_ci.py
+        run: python3 scripts/ci_annotate.py "vulkan" vulkan.log -- python3 scripts/check_vulkan_ci.py
