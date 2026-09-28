@@ -22,13 +22,27 @@ FetchContent_Declare(cgltf
   SOURCE_SUBDIR axiom-download-only
   SYSTEM)
 
-# SDL3 is declared now and made available in Stage 1 (renderer window path).
+# SDL3 (zlib license): window + Vulkan surface for the local window path (Stage 1). Static, video only.
 FetchContent_Declare(SDL3
   GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
   GIT_TAG fa2c02bb6e21974a89ea9824bc53c9932abe5f9c # release-3.4.16
   SYSTEM)
 
-FetchContent_MakeAvailable(Catch2 VulkanMemoryAllocator cgltf)
+set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+set(SDL_STATIC ON CACHE BOOL "" FORCE)
+set(SDL_TEST_LIBRARY OFF CACHE BOOL "" FORCE)
+set(SDL_EXAMPLES OFF CACHE BOOL "" FORCE)
+foreach(subsystem AUDIO CAMERA JOYSTICK HAPTIC HIDAPI SENSOR POWER RENDER GPU DIALOG)
+  set(SDL_${subsystem} OFF CACHE BOOL "" FORCE)
+endforeach()
+# Optional X11 extensions are not needed for a window + Vulkan surface; SDL errors if one is only partly
+# installed, so they are off. Plain X11 and Wayland windows are unaffected.
+foreach(x11ext XCURSOR XDBE XINPUT XFIXES XRANDR XSCRNSAVER XSHAPE XSYNC XTEST)
+  set(SDL_X11_${x11ext} OFF CACHE BOOL "" FORCE)
+endforeach()
+set(SDL_VULKAN ON CACHE BOOL "" FORCE)
+
+FetchContent_MakeAvailable(Catch2 VulkanMemoryAllocator cgltf SDL3)
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 
 add_library(axiom_vma_headers INTERFACE)

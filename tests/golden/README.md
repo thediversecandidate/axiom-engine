@@ -17,4 +17,4 @@
 ## Review log
 | Image | SHA-256 (pam) | Rendered on | Reviewed | Checks |
 | --- | --- | --- | --- | --- |
-| triangle.reference.pam | `130b421f505fd09c…` | lavapipe, Mesa 25.2.8-0ubuntu0.24.04.2, debug/release/asan-ubsan byte-identical | 2026-09-28, Claude (visual + analytic tests); awaiting Derrick's visual sign-off | upright; blue apex, red bottom-left, green bottom-right; black background; landmarks ±2, coverage ±1%, culling pass |
+| triangle.reference.pam | `130b421f505fd09c…` | lavapipe, Mesa 25.2.8-0ubuntu0.24.04.2, debug/release/asan-ubsan byte-identical | 2026-09-28, Claude (visual + analytic tests); Derrick approved visually 2026-09-28 | upright; blue apex, red bottom-left, green bottom-right; black background; landmarks ±2, coverage ±1%, culling pass |
