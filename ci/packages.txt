@@ -14,3 +14,11 @@ vulkan-validationlayers
 mesa-vulkan-drivers
 glslc
 spirv-cross
+pkgconf
+libx11-dev
+libxext-dev
+libwayland-dev
+libxkbcommon-dev
+wayland-protocols
+libegl-dev
+libdecor-0-dev

@@ -15,7 +15,7 @@ python3 scripts/check_all.py  # include rules, line limit, repo maps, self-tests
 ```
 
 ## Run the Stage 1 window (local)
-SDL3 picks its window backends at configure time, so install the development headers for your desktop before the first `cmake --preset`: Wayland `libwayland-dev libxkbcommon-dev wayland-protocols`, X11 `libx11-dev libxext-dev`. Without either, only SDL's offscreen driver is built.
+SDL3 picks its window backends at configure time, so install the window-system development packages before the first `cmake --preset` (CI uses the same set, see `ci/packages.txt`): `pkgconf libx11-dev libxext-dev libwayland-dev libxkbcommon-dev wayland-protocols libegl-dev libdecor-0-dev`. SDL refuses to configure with neither X11 nor Wayland available.
 
 ```sh
 cmake --build --preset release
