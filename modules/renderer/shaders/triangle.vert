@@ -7,7 +7,7 @@ layout(push_constant) uniform Push {
   mat4 mvp; // column-major, column vectors: clip = mvp * vec4(p, 1) (CONVENTIONS §3-4)
 } pc;
 
-layout(location = 0) out vec3 vColor;
+layout(location = 0) noperspective out vec3 vColor;
 
 void main() {
   gl_Position = pc.mvp * vec4(inPosition, 1.0);
