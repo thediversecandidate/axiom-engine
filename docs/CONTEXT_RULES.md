@@ -4,7 +4,7 @@ Target: a local model with a 32,768-token window. Counts use the pinned tokenize
 
 ## 1. Modules
 * `modules/<name>/include/axiom/<name>/*.hpp` public, `src/` private, `tests/`.
-* Allowed: `core` → none; `math` → none; `physics` → core, math; `renderer` → core, math (never physics); `ai` → core, math; `app` → all. Never include another module's `src/`.
+* Allowed: `core` → none; `math` → none; `physics` → core, math; `renderer_vk` → core, math; `renderer` → core, math, renderer_vk (never physics); `ai` → core, math; `app` → all. Never include another module's `src/`.
 
 ## 2. Session Budget (tokens)
 | Slot | Max |
@@ -24,7 +24,7 @@ Target: a local model with a 32,768-token window. Counts use the pinned tokenize
 
 ## 3. What to Load
 1. `CLAUDE.md`, `docs/STATE.md`, this file, `docs/CONVENTIONS.md` §2.
-2. The union of sections required by the task's responsibilities and the stage's acceptance rules: build/CI → CONVENTIONS §1 + `CONTEXT_TOOLING.md`; math → §3; physics or core time/simulation → §3 + §5; rendering/shaders → §3 + §4; ai → §3 + §5 + §6; app → §3–§6; evaluation/benchmarks → §6; assets, licensing, voices → §7; Doom fork → `CONTEXT_TOOLING.md` §6. Plus the current ROADMAP stage.
+2. The union of sections required by the task's responsibilities and the stage's acceptance rules: build/CI → CONVENTIONS §1 + `CONTEXT_TOOLING.md`; math → §3; physics or core time/simulation → §3 + §5; rendering/shaders (`renderer`, `renderer_vk`) → §3 + §4; ai → §3 + §5 + §6; app → §3–§6; evaluation/benchmarks → §6; assets, licensing, voices → §7; Doom fork → `CONTEXT_TOOLING.md` §6. Plus the current ROADMAP stage.
 3. Story/art authoring loads all of `CREATIVE_DIRECTION.md` + §7. Code implementing a creative test loads its CREATIVE_DIRECTION §8 row and every section it references, in addition to the union above.
 4. `docs/repomap/index.md` and the target module's map; target files in full; dependencies as public headers only.
 * If the union does not fit, split the task; never drop a required section. One atomic step in one module per session (`infra` tasks may span directories).

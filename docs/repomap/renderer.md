@@ -1,32 +1,5 @@
 # Module `renderer` — public API
-Depends on: core, math
-
-## `modules/renderer/include/axiom/renderer/command_context.hpp` — One command pool + command buffer + fence for synchronous submission (tests, offscreen renders).
-- `class CommandContext`
-  /// @owns a command pool, one primary command buffer and a fence; move-only.
-  /// @lifetime must be destroyed before the device.
-  /// @thread single-threaded: begin() and submitAndWait() on one thread.
-  /// @errors begin()/submitAndWait() return kGpu on any Vulkan failure.
-  - `(move-only, default-constructible)`
-  - `[[nodiscard]] static core::Result<CommandContext> create(const VulkanDevice &device)`
-  - `[[nodiscard]] core::Result<VkCommandBuffer> begin()`
-  - `[[nodiscard]] core::Result<bool> submitAndWait()`
-  - `void reset() noexcept`
-  - `VkDevice device_ = VK_NULL_HANDLE`
-  - `VkQueue queue_ = VK_NULL_HANDLE`
-  - `VkCommandPool pool_ = VK_NULL_HANDLE`
-  - `VkCommandBuffer cmd_ = VK_NULL_HANDLE`
-  - `VkFence fence_ = VK_NULL_HANDLE`
-
-## `modules/renderer/include/axiom/renderer/gpu_allocator.hpp` — GPU memory allocation through the Vulkan Memory Allocator (CONVENTIONS §1).
-- `class GpuAllocator`
-  /// @owns the VmaAllocator; move-only.
-  /// @lifetime destroy every allocation made with it first; must be destroyed before the device.
-  /// @errors create() fails with kGpu if vmaCreateAllocator fails.
-  - `(move-only, default-constructible)`
-  - `[[nodiscard]] static core::Result<GpuAllocator> create(const VulkanInstance &instance, const VulkanDevice &device)`
-  - `[[nodiscard]] VmaAllocator handle() const noexcept`
-  - `VmaAllocator allocator_ = VK_NULL_HANDLE`
+Depends on: core, math, renderer_vk
 
 ## `modules/renderer/include/axiom/renderer/module_info.hpp` — Stage 0 placeholder API for the renderer module. Allowed dependencies: axiom::core axiom::math.
 - `[[nodiscard]] std::string_view moduleName() noexcept`
@@ -67,52 +40,18 @@ Depends on: core, math
   /// SPIR-V words of a built-in shader.
   /// @lifetime static storage; the span is valid for the whole program.
 
-## `modules/renderer/include/axiom/renderer/validation.hpp` — Validation-message sink: counts Vulkan debug-utils messages by severity so tests can fail on
-- `struct ValidationSink`
-  /// @thread callbacks may arrive on any thread; all members are atomic.
-  /// @lifetime the caller owns the sink; it must outlive every VulkanInstance that reports to it.
-  - `std::atomic<std::uint32_t> errors{0}`
-  - `std::atomic<std::uint32_t> warnings{0}`
-  - `std::atomic<std::uint32_t> infos{0}`
-  - `char firstError[512] = {}`
-  - `std::atomic<bool> firstErrorSet{false}`
-
-## `modules/renderer/include/axiom/renderer/vulkan_device.hpp` — Physical-device selection and logical-device creation with explicit Vulkan 1.3 feature enables.
-- `struct DeviceDesc`
-  - `std::optional<VkDriverId> requiredDriver`
-- `class VulkanDevice`
-  /// @owns the VkDevice; move-only.
-  /// @lifetime must be destroyed before the VulkanInstance it was created from.
-  /// @errors create() fails with kUnsupported if no device offers Vulkan 1.3, a graphics queue,
-  ///         dynamicRendering and synchronization2 (and the required driver, if any).
+## `modules/renderer/include/axiom/renderer/triangle_pipeline.hpp` — Stage 1 triangle pipeline: dynamic rendering, vertex = {vec3 position, vec3 linear color},
+- `struct TriangleVertex`
+  - `float position[3]`
+  - `float color[3]`
+- `class TrianglePipeline`
+  /// @owns the VkPipeline and its VkPipelineLayout; move-only.
+  /// @lifetime must be destroyed before the device.
+  /// @errors create() fails with kGpu if shader-module, layout or pipeline creation fails.
   - `(move-only, default-constructible)`
-  - `[[nodiscard]] static core::Result<VulkanDevice> create(const VulkanInstance &instance, const DeviceDesc &desc)`
-  - `[[nodiscard]] VkDevice handle() const noexcept`
-  - `[[nodiscard]] VkPhysicalDevice physical() const noexcept`
-  - `[[nodiscard]] VkQueue graphicsQueue() const noexcept`
-  - `[[nodiscard]] std::uint32_t graphicsQueueFamily() const noexcept`
-  - `[[nodiscard]] VkDriverId driverId() const noexcept`
+  - `[[nodiscard]] static core::Result<TrianglePipeline> create(const VulkanDevice &device, VkFormat colorFormat)`
+  - `void recordBind(VkCommandBuffer cmd, std::uint32_t width, std::uint32_t height, VkFrontFace frontFace, const float (&mvpColumnMajor)[16]) const noexcept`
   - `void reset() noexcept`
-  - `VkPhysicalDevice physical_ = VK_NULL_HANDLE`
   - `VkDevice device_ = VK_NULL_HANDLE`
-  - `VkQueue queue_ = VK_NULL_HANDLE`
-  - `std::uint32_t queueFamily_ = 0`
-  - `VkDriverId driverId_ = static_cast<VkDriverId>(0)`
-
-## `modules/renderer/include/axiom/renderer/vulkan_instance.hpp` — Vulkan 1.3 instance with the Khronos validation layer and a debug-utils messenger.
-- `struct InstanceDesc`
-  - `const char *appName = "axiom"`
-  - `bool enableValidation = true`
-  - `ValidationSink *sink = nullptr`
-- `class VulkanInstance`
-  /// @owns the VkInstance and its debug messenger; move-only.
-  /// @lifetime destroy every device created from it first; desc.sink must outlive it.
-  /// @errors create() fails with kUnsupported if Vulkan 1.3, the layer or the extension is missing.
-  - `(move-only, default-constructible)`
-  - `[[nodiscard]] static core::Result<VulkanInstance> create(const InstanceDesc &desc)`
-  - `[[nodiscard]] VkInstance handle() const noexcept`
-  - `[[nodiscard]] bool validationEnabled() const noexcept`
-  - `void submitTestMessage(VkDebugUtilsMessageSeverityFlagBitsEXT severity, const char *text) const noexcept`
-  - `void reset() noexcept`
-  - `VkInstance instance_ = VK_NULL_HANDLE`
-  - `VkDebugUtilsMessengerEXT messenger_ = VK_NULL_HANDLE`
+  - `VkPipelineLayout layout_ = VK_NULL_HANDLE`
+  - `VkPipeline pipeline_ = VK_NULL_HANDLE`

@@ -1,5 +1,5 @@
-#include "axiom/renderer/gpu_allocator.hpp"
-#include "axiom/renderer/validation.hpp"
+#include "axiom/renderer_vk/gpu_allocator.hpp"
+#include "axiom/renderer_vk/validation.hpp"
 
 #include <catch2/catch_test_macros.hpp>
 

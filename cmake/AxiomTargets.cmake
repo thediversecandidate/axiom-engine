@@ -28,3 +28,15 @@ function(axiom_add_module_tests name)
   axiom_warnings(axiom_${name}_tests)
   add_test(NAME ${name}.unit COMMAND axiom_${name}_tests)
 endfunction()
+
+# axiom_lavapipe_tests(<test names...>) — GPU tests run on lavapipe only (ROADMAP Stage 1). Without the
+# ICD the device tests fail (no silent pass): they require VK_DRIVER_ID_MESA_LLVMPIPE.
+function(axiom_lavapipe_tests)
+  file(GLOB icd /usr/share/vulkan/icd.d/lvp_icd*.json)
+  if(NOT icd)
+    message(WARNING "lavapipe ICD not found: GPU tests will fail")
+    return()
+  endif()
+  list(GET icd 0 icd)
+  set_tests_properties(${ARGN} PROPERTIES ENVIRONMENT "VK_DRIVER_FILES=${icd};VK_ICD_FILENAMES=${icd}")
+endfunction()

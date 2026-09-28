@@ -1,6 +1,6 @@
-#include "axiom/renderer/command_context.hpp"
 #include "axiom/renderer/offscreen_target.hpp"
-#include "axiom/renderer/validation.hpp"
+#include "axiom/renderer_vk/command_context.hpp"
+#include "axiom/renderer_vk/validation.hpp"
 
 #include <catch2/catch_test_macros.hpp>
 #include <cmath>

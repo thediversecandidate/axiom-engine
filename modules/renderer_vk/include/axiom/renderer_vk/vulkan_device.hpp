@@ -2,7 +2,7 @@
 // Physical-device selection and logical-device creation with explicit Vulkan 1.3 feature enables.
 
 #include "axiom/core/error.hpp"
-#include "axiom/renderer/vulkan_instance.hpp"
+#include "axiom/renderer_vk/vulkan_instance.hpp"
 
 #include <cstdint>
 #include <optional>

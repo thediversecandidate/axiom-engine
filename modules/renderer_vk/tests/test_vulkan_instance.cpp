@@ -1,5 +1,5 @@
-#include "axiom/renderer/validation.hpp"
-#include "axiom/renderer/vulkan_instance.hpp"
+#include "axiom/renderer_vk/validation.hpp"
+#include "axiom/renderer_vk/vulkan_instance.hpp"
 
 #include <catch2/catch_test_macros.hpp>
 #include <cstring>

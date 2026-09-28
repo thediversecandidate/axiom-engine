@@ -2,8 +2,8 @@
 // GPU memory allocation through the Vulkan Memory Allocator (CONVENTIONS §1).
 
 #include "axiom/core/error.hpp"
-#include "axiom/renderer/vulkan_device.hpp"
-#include "axiom/renderer/vulkan_instance.hpp"
+#include "axiom/renderer_vk/vulkan_device.hpp"
+#include "axiom/renderer_vk/vulkan_instance.hpp"
 
 #include <vk_mem_alloc.h>
 

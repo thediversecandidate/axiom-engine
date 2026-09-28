@@ -1,6 +1,6 @@
 #include "axiom/renderer/shader_library.hpp"
-#include "axiom/renderer/validation.hpp"
-#include "axiom/renderer/vulkan_device.hpp"
+#include "axiom/renderer_vk/validation.hpp"
+#include "axiom/renderer_vk/vulkan_device.hpp"
 
 #include <catch2/catch_test_macros.hpp>
 #include <vector>

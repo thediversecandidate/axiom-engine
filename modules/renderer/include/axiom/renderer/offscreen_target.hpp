@@ -3,7 +3,7 @@
 // R8G8B8A8_SRGB image + host-readable readback buffer, rendered with dynamic rendering.
 
 #include "axiom/core/error.hpp"
-#include "axiom/renderer/gpu_allocator.hpp"
+#include "axiom/renderer_vk/gpu_allocator.hpp"
 
 #include <cstdint>
 #include <span>

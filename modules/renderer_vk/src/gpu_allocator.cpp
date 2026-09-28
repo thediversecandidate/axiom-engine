@@ -1,4 +1,4 @@
-#include "axiom/renderer/gpu_allocator.hpp"
+#include "axiom/renderer_vk/gpu_allocator.hpp"
 
 #include <utility>
 

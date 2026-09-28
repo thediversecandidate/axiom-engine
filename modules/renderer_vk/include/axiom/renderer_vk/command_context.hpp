@@ -2,7 +2,7 @@
 // One command pool + command buffer + fence for synchronous submission (tests, offscreen renders).
 
 #include "axiom/core/error.hpp"
-#include "axiom/renderer/vulkan_device.hpp"
+#include "axiom/renderer_vk/vulkan_device.hpp"
 
 #include <vulkan/vulkan.h>
 
