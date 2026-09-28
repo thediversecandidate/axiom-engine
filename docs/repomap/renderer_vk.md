@@ -10,7 +10,7 @@ Depends on: core, math
   - `(move-only, default-constructible)`
   - `[[nodiscard]] static core::Result<CommandContext> create(const VulkanDevice &device)`
   - `[[nodiscard]] core::Result<VkCommandBuffer> begin()`
-  - `[[nodiscard]] core::Result<bool> submitAndWait()`
+  - `[[nodiscard]] core::Result<bool> submitAndWait(VkSemaphore waitBeforeColorOutput = VK_NULL_HANDLE, VkSemaphore signalOnCompletion = VK_NULL_HANDLE)`
   - `void reset() noexcept`
   - `VkDevice device_ = VK_NULL_HANDLE`
   - `VkQueue queue_ = VK_NULL_HANDLE`
@@ -67,6 +67,7 @@ Depends on: core, math
   - `[[nodiscard]] std::uint32_t graphicsQueueFamily() const noexcept`
   - `[[nodiscard]] VkDriverId driverId() const noexcept`
   - `[[nodiscard]] bool presentEnabled() const noexcept`
+  - `[[nodiscard]] bool mutableSwapchainFormat() const noexcept`
   - `void reset() noexcept`
   - `VkPhysicalDevice physical_ = VK_NULL_HANDLE`
   - `VkDevice device_ = VK_NULL_HANDLE`
@@ -74,6 +75,7 @@ Depends on: core, math
   - `std::uint32_t queueFamily_ = 0`
   - `VkDriverId driverId_ = static_cast<VkDriverId>(0)`
   - `bool presentEnabled_ = false`
+  - `bool mutableSwapchainFormat_ = false`
 
 ## `modules/renderer_vk/include/axiom/renderer_vk/vulkan_instance.hpp` — Vulkan 1.3 instance with the Khronos validation layer and a debug-utils messenger.
 - `struct InstanceDesc`

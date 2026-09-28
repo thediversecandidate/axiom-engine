@@ -127,12 +127,12 @@ core::Result<VulkanDevice> VulkanDevice::create(const VulkanInstance &instance, 
   info.pNext = &enable;
   info.queueCreateInfoCount = 1;
   info.pQueueCreateInfos = &queueInfo;
-  const char *swapchainExtension = VK_KHR_SWAPCHAIN_EXTENSION_NAME;
   const bool present = desc.presentSurface != VK_NULL_HANDLE;
-  if (present) {
-    info.enabledExtensionCount = 1;
-    info.ppEnabledExtensionNames = &swapchainExtension;
-  }
+  const bool mutableFormat =
+      present && deviceExtensionAvailable(chosen->device, VK_KHR_SWAPCHAIN_MUTABLE_FORMAT_EXTENSION_NAME);
+  const char *extensions[] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SWAPCHAIN_MUTABLE_FORMAT_EXTENSION_NAME};
+  info.enabledExtensionCount = present ? (mutableFormat ? 2u : 1u) : 0u;
+  info.ppEnabledExtensionNames = extensions;
 
   VulkanDevice result;
   if (vkCreateDevice(chosen->device, &info, nullptr, &result.device_) != VK_SUCCESS) {
@@ -142,6 +142,7 @@ core::Result<VulkanDevice> VulkanDevice::create(const VulkanInstance &instance, 
   result.queueFamily_ = chosen->queueFamily;
   result.driverId_ = chosen->driverId;
   result.presentEnabled_ = present;
+  result.mutableSwapchainFormat_ = mutableFormat;
   vkGetDeviceQueue(result.device_, result.queueFamily_, 0, &result.queue_);
   return result;
 }
@@ -149,7 +150,8 @@ core::Result<VulkanDevice> VulkanDevice::create(const VulkanInstance &instance, 
 VulkanDevice::VulkanDevice(VulkanDevice &&other) noexcept
     : physical_(std::exchange(other.physical_, VK_NULL_HANDLE)), device_(std::exchange(other.device_, VK_NULL_HANDLE)),
       queue_(std::exchange(other.queue_, VK_NULL_HANDLE)), queueFamily_(other.queueFamily_), driverId_(other.driverId_),
-      presentEnabled_(std::exchange(other.presentEnabled_, false)) {}
+      presentEnabled_(std::exchange(other.presentEnabled_, false)),
+      mutableSwapchainFormat_(std::exchange(other.mutableSwapchainFormat_, false)) {}
 
 VulkanDevice &VulkanDevice::operator=(VulkanDevice &&other) noexcept {
   if (this != &other) {
@@ -160,6 +162,7 @@ VulkanDevice &VulkanDevice::operator=(VulkanDevice &&other) noexcept {
     queueFamily_ = other.queueFamily_;
     driverId_ = other.driverId_;
     presentEnabled_ = std::exchange(other.presentEnabled_, false);
+    mutableSwapchainFormat_ = std::exchange(other.mutableSwapchainFormat_, false);
   }
   return *this;
 }
@@ -175,6 +178,7 @@ void VulkanDevice::reset() noexcept {
   physical_ = VK_NULL_HANDLE;
   queue_ = VK_NULL_HANDLE;
   presentEnabled_ = false;
+  mutableSwapchainFormat_ = false;
 }
 
 } // namespace axiom::renderer

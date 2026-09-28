@@ -41,6 +41,9 @@ public:
   [[nodiscard]] VkDriverId driverId() const noexcept { return driverId_; }
   /// True if VK_KHR_swapchain is enabled and the graphics queue can present to DeviceDesc::presentSurface.
   [[nodiscard]] bool presentEnabled() const noexcept { return presentEnabled_; }
+  /// True if VK_KHR_swapchain_mutable_format is enabled (requested with presentation when available), which
+  /// lets a swapchain of UNORM images be rendered through SRGB views when the surface offers no SRGB format.
+  [[nodiscard]] bool mutableSwapchainFormat() const noexcept { return mutableSwapchainFormat_; }
 
 private:
   void reset() noexcept;
@@ -51,6 +54,7 @@ private:
   std::uint32_t queueFamily_ = 0;
   VkDriverId driverId_ = static_cast<VkDriverId>(0);
   bool presentEnabled_ = false;
+  bool mutableSwapchainFormat_ = false;
 };
 
 } // namespace axiom::renderer

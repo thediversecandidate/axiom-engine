@@ -25,8 +25,11 @@ public:
 
   /// Resets and begins the command buffer for one-time submission.
   [[nodiscard]] core::Result<VkCommandBuffer> begin();
-  /// Ends, submits to the graphics queue and blocks until the GPU finishes.
-  [[nodiscard]] core::Result<bool> submitAndWait();
+  /// Ends, submits to the graphics queue and blocks until the GPU finishes. Optionally waits on
+  /// `waitBeforeColorOutput` (e.g. a swapchain image-acquired semaphore) at the color-attachment-output stage
+  /// and signals `signalOnCompletion` (e.g. the semaphore vkQueuePresentKHR waits on).
+  [[nodiscard]] core::Result<bool> submitAndWait(VkSemaphore waitBeforeColorOutput = VK_NULL_HANDLE,
+                                                 VkSemaphore signalOnCompletion = VK_NULL_HANDLE);
 
 private:
   void reset() noexcept;

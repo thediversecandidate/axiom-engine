@@ -21,9 +21,10 @@ ALLOWED = {
     "math": set(),
     "physics": {"core", "math"},
     "renderer_vk": {"core", "math"},
+    "renderer_present": {"core", "math", "renderer_vk"},
     "renderer": {"core", "math", "renderer_vk"},
     "ai": {"core", "math"},
-    "app": {"core", "math", "physics", "renderer_vk", "renderer", "ai"},
+    "app": {"core", "math", "physics", "renderer_vk", "renderer_present", "renderer", "ai"},
 }
 INCLUDE_RE = re.compile(r'^\s*#\s*include\s*[<"]([^>"]+)[>"]', re.MULTILINE)
 SOURCE_EXT = {".hpp", ".h", ".cpp"}

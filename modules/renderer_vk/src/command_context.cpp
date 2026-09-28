@@ -51,7 +51,7 @@ core::Result<VkCommandBuffer> CommandContext::begin() {
   return cmd_;
 }
 
-core::Result<bool> CommandContext::submitAndWait() {
+core::Result<bool> CommandContext::submitAndWait(VkSemaphore waitBeforeColorOutput, VkSemaphore signalOnCompletion) {
   if (vkEndCommandBuffer(cmd_) != VK_SUCCESS) {
     return fail(ErrorCode::kGpu, "vkEndCommandBuffer failed");
   }
@@ -62,6 +62,22 @@ core::Result<bool> CommandContext::submitAndWait() {
   submit.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO_2;
   submit.commandBufferInfoCount = 1;
   submit.pCommandBufferInfos = &cmdInfo;
+  VkSemaphoreSubmitInfo wait{};
+  wait.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO;
+  wait.semaphore = waitBeforeColorOutput;
+  wait.stageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT;
+  VkSemaphoreSubmitInfo signal{};
+  signal.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO;
+  signal.semaphore = signalOnCompletion;
+  signal.stageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT;
+  if (waitBeforeColorOutput != VK_NULL_HANDLE) {
+    submit.waitSemaphoreInfoCount = 1;
+    submit.pWaitSemaphoreInfos = &wait;
+  }
+  if (signalOnCompletion != VK_NULL_HANDLE) {
+    submit.signalSemaphoreInfoCount = 1;
+    submit.pSignalSemaphoreInfos = &signal;
+  }
   if (vkResetFences(device_, 1, &fence_) != VK_SUCCESS || vkQueueSubmit2(queue_, 1, &submit, fence_) != VK_SUCCESS) {
     return fail(ErrorCode::kGpu, "vkQueueSubmit2 failed");
   }

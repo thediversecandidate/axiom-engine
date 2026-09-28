@@ -13,6 +13,7 @@
 * 5 culling: reversed winding draws 0 px; ordinary → mirrored (CW) → ordinary in one command buffer, each paired with its reversed copy, 1,050 px per triangle; a forced-CCW sabotage is caught
 * 6 full-image comparison to the reviewed reference `tests/golden/triangle.reference.pam` (≤ 65 px beyond 2/255); debug/release/asan-ubsan byte-identical locally; affine sabotage gives 9,420 px beyond tolerance; the comparator's 65/66 boundary is unit-tested; actual/diff/reference PNGs uploaded by CI on failure
 * 7a `InstanceDesc::extraExtensions` (missing extension → kUnsupported); `DeviceDesc::presentSurface` selects a graphics family that can present and enables VK_KHR_swapchain; tested with VK_EXT_headless_surface on lavapipe; a sabotage that skips enabling the extension is caught
+* 7b `Swapchain` (renderer_present, ADR-0006): SRGB surface format, else UNORM images + mutable-format SRGB views (the headless surface offers only UNORM); FIFO; acquire/present report out-of-date as values; clear read back SRGB-encoded on every image, then recreate at a new extent, zero validation errors; a UNORM-view sabotage is caught (error 73 > 2)
 * Renderer split into `renderer_vk` + `renderer` when the renderer map reached 2,826 / 2,500 tokens (ADR-0005)
 
 ## Stage 0 (merged in PR #1, 2026-09-28)
