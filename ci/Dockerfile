@@ -7,6 +7,11 @@ FROM ubuntu:26.04
 ARG AXIOM_APT_SNAPSHOT=20260927T000000Z
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Bootstrap: the snapshot service is HTTPS-only and the base image has no CA certificates, so
+# ca-certificates comes from the regular archive first; the next step reinstalls everything,
+# ca-certificates included, from the snapshot (ADR-0002).
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+
 COPY ci/packages.txt /opt/axiom-ci/packages.txt
 RUN apt-get update --snapshot "${AXIOM_APT_SNAPSHOT}" \
  && xargs -a /opt/axiom-ci/packages.txt apt-get install -y --no-install-recommends --snapshot "${AXIOM_APT_SNAPSHOT}" \
