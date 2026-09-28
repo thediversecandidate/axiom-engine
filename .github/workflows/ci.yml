@@ -52,6 +52,17 @@ jobs:
         with:
           name: logs-${{ matrix.preset }}
           path: build/logs/
+      - name: Convert test images to PNG
+        if: failure()
+        run: python3 scripts/pam_to_png.py build/${{ matrix.preset }}/test_output tests/golden
+      - if: failure()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        with:
+          name: test-images-${{ matrix.preset }}
+          path: |
+            build/${{ matrix.preset }}/test_output/*.png
+            tests/golden/*.png
+          if-no-files-found: warn
 
   checks:
     name: checkers, self-tests, format, headless Vulkan
