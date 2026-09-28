@@ -1,0 +1,33 @@
+cmake_minimum_required(VERSION 3.25)
+project(Axiom VERSION 0.0.1 LANGUAGES C CXX)
+
+if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  message(FATAL_ERROR "Axiom requires Clang (CONVENTIONS §1); got ${CMAKE_CXX_COMPILER_ID}")
+endif()
+string(REGEX MATCH "^[0-9]+" AXIOM_CLANG_MAJOR "${CMAKE_CXX_COMPILER_VERSION}")
+if(NOT AXIOM_CLANG_MAJOR STREQUAL "21" AND NOT AXIOM_ALLOW_UNPINNED_COMPILER)
+  message(FATAL_ERROR "Axiom pins Clang 21; found ${CMAKE_CXX_COMPILER_VERSION}")
+endif()
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+option(AXIOM_SANITIZE "Build everything with ASan + UBSan (asan-ubsan preset)" OFF)
+if(AXIOM_SANITIZE)
+  add_compile_options(-fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer)
+  add_link_options(-fsanitize=address,undefined)
+endif()
+
+include(cmake/AxiomTargets.cmake)
+include(cmake/Dependencies.cmake)
+enable_testing()
+
+add_subdirectory(third_party_impl)
+add_subdirectory(modules/core)
+add_subdirectory(modules/math)
+add_subdirectory(modules/physics)
+add_subdirectory(modules/renderer)
+add_subdirectory(modules/ai)
+add_subdirectory(modules/app)
+add_subdirectory(tests)

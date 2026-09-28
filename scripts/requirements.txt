@@ -1,0 +1,5 @@
+# Pinned Python tooling (CONVENTIONS §1). Training code has its own training/requirements.txt.
+pytest==9.1.1
+tree-sitter==0.26.0
+tree-sitter-cpp==0.23.4
+tokenizers==0.23.2
