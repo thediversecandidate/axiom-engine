@@ -11,6 +11,7 @@
 `tests/golden/` (reference image + README review log); `modules/renderer/tests/` (image_compare.hpp, test_triangle_reference.cpp); `scripts/pam_to_png.py` + self-test; CI uploads `test-images-<preset>` on failure.
 
 ## Open items
+* **Stale remote branches (delete in GitHub; this session gets 403):** `ci-probe-image-upload` (deliberate sabotage used to verify the CI image upload; never merge), `stage-0-tooling` (merged).
 * **Local builds:** use the override with Clang 19 (`-DAXIOM_CLANG_VERSION=19 -DAXIOM_ALLOW_UNPINNED_COMPILER=ON`); Clang 18 cannot build `std::expected` with libstdc++ (ADR-0004).
 1. **Tokenizer not pinned (ADR-0003):** `scripts/tokenizer/` is empty, so all counts use the conservative fallback (bytes/3). Needed: the local model's `tokenizer.json` and chat template, then a `tokenizer.lock`.
 2. **Measured system-prompt tokens:** not yet measured for the local agent (default budget 3,500 assumed).
