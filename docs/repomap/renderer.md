@@ -60,6 +60,13 @@ Depends on: core, math
   - `std::uint32_t width_ = 0`
   - `std::uint32_t height_ = 0`
 
+## `modules/renderer/include/axiom/renderer/shader_library.hpp` — SPIR-V compiled from modules/renderer/shaders at build time (cmake/AxiomShaders.cmake).
+- `enum class ShaderId : std::uint8_t`
+  - `kTriangleVert, kTriangleFrag`
+- `[[nodiscard]] std::span<const std::uint32_t> shaderSpirv(ShaderId id) noexcept`
+  /// SPIR-V words of a built-in shader.
+  /// @lifetime static storage; the span is valid for the whole program.
+
 ## `modules/renderer/include/axiom/renderer/validation.hpp` — Validation-message sink: counts Vulkan debug-utils messages by severity so tests can fail on
 - `struct ValidationSink`
   /// @thread callbacks may arrive on any thread; all members are atomic.

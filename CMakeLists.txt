@@ -20,6 +20,7 @@ if(AXIOM_SANITIZE)
 endif()
 
 include(cmake/AxiomTargets.cmake)
+include(cmake/AxiomShaders.cmake)
 include(cmake/Dependencies.cmake)
 enable_testing()
 
