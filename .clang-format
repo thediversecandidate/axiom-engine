@@ -1,0 +1,3 @@
+# CONVENTIONS §1: LLVM base style, 120 columns.
+BasedOnStyle: LLVM
+ColumnLimit: 120

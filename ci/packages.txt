@@ -1,0 +1,17 @@
+ca-certificates
+git
+clang-21
+libc++-21-dev
+libc++abi-21-dev
+libclang-rt-21-dev
+clang-format-21
+cmake
+ninja-build
+python3
+python3-venv
+libvulkan-dev
+vulkan-tools
+vulkan-validationlayers
+mesa-vulkan-drivers
+glslc
+spirv-cross

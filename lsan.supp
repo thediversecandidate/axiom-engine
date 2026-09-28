@@ -1,0 +1,3 @@
+# LeakSanitizer suppressions (CONVENTIONS §1).
+# Starts empty. An entry is allowed only for an identified external defect, matched on a
+# specific function (never a whole library), with a reproducer and a tracking link in a comment.
