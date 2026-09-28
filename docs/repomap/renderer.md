@@ -15,6 +15,33 @@ Depends on: core, math
   - `char firstError[512] = {}`
   - `std::atomic<bool> firstErrorSet{false}`
 
+## `modules/renderer/include/axiom/renderer/vulkan_device.hpp` — Physical-device selection and logical-device creation with explicit Vulkan 1.3 feature enables.
+- `struct DeviceDesc`
+  - `std::optional<VkDriverId> requiredDriver`
+- `class VulkanDevice`
+  /// @owns the VkDevice; move-only.
+  /// @lifetime must be destroyed before the VulkanInstance it was created from.
+  /// @errors create() fails with kUnsupported if no device offers Vulkan 1.3, a graphics queue,
+  ///         dynamicRendering and synchronization2 (and the required driver, if any).
+  - `[[nodiscard]] static core::Result<VulkanDevice> create(const VulkanInstance &instance, const DeviceDesc &desc)`
+  - `VulkanDevice() = default`
+  - `VulkanDevice(VulkanDevice &&other) noexcept`
+  - `VulkanDevice &operator=(VulkanDevice &&other) noexcept`
+  - `VulkanDevice(const VulkanDevice &) = delete`
+  - `VulkanDevice &operator=(const VulkanDevice &) = delete`
+  - `~VulkanDevice()`
+  - `[[nodiscard]] VkDevice handle() const noexcept`
+  - `[[nodiscard]] VkPhysicalDevice physical() const noexcept`
+  - `[[nodiscard]] VkQueue graphicsQueue() const noexcept`
+  - `[[nodiscard]] std::uint32_t graphicsQueueFamily() const noexcept`
+  - `[[nodiscard]] VkDriverId driverId() const noexcept`
+  - `void reset() noexcept`
+  - `VkPhysicalDevice physical_ = VK_NULL_HANDLE`
+  - `VkDevice device_ = VK_NULL_HANDLE`
+  - `VkQueue queue_ = VK_NULL_HANDLE`
+  - `std::uint32_t queueFamily_ = 0`
+  - `VkDriverId driverId_ = static_cast<VkDriverId>(0)`
+
 ## `modules/renderer/include/axiom/renderer/vulkan_instance.hpp` — Vulkan 1.3 instance with the Khronos validation layer and a debug-utils messenger.
 - `struct InstanceDesc`
   - `const char *appName = "axiom"`
