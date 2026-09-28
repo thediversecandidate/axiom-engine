@@ -1,0 +1,18 @@
+{
+  "description": "Stage 1 frozen triangle (ROADMAP Stage 1). Camera: CONVENTIONS 4 projection, fovY 60 deg, aspect 1, near 0.1, eye (0,0,2) looking down -Z, up +Y. MVP = P * V, column-major. The apex is 1.5 units farther away than the base, so the vertex w values differ and interpolation must be perspective-correct. Vertex rows: x y z r g b (linear color).",
+  "width": 256,
+  "height": 256,
+  "clear_linear": [0, 0, 0, 1],
+  "mvp_column_major": [1.7320508075688772, 0, 0, 0, 0, -1.7320508075688772, 0, 0, 0, 0, 0, -1, 0, 0, 0.1, 2],
+  "vertices": [
+    [-0.6, -0.6, 0.0, 1, 0, 0],
+    [0.6, -0.6, 0.0, 0, 1, 0],
+    [0.0, 1.2, -1.5, 0, 0, 1]
+  ],
+  "landmarks": [
+    [128, 128], [128, 100], [100, 170], [156, 170], [128, 60],
+    [128, 185], [80, 180], [176, 180], [20, 20], [128, 230]
+  ],
+  "channel_tolerance": 2,
+  "coverage_tolerance": 0.01
+}
