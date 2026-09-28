@@ -12,7 +12,7 @@ Two tracks run in parallel: the **engine track** (Stages 0–13, repository `axi
 ## Stage 0: Ground Truth & Tooling
 * **Deliverables:** module skeleton (`core math physics renderer ai app`), toolchain file, presets, pinned CI image, pinned `SYSTEM` FetchContent with single-header implementation libraries, `AXIOM_ASSERT`, `core::Error`/`Result`, `CLAUDE.md`, `STATE.md`, ADR-0001 (all decisions to date), checkers + `session_manifest.py` + `run_quiet.py` + `expect_failure.py` + fixtures, `.clang-format`, empty `lsan.supp`, GitHub Actions on `ubuntu-26.04` inside the CI image.
 * **Acceptance (CI, all three presets):**
-  * A Catch2 smoke test per module; `__cpp_exceptions` undefined in engine code; `_LIBCPP_VERSION` defined in engine and tests.
+  * A Catch2 smoke test per module; `__cpp_exceptions` undefined in engine code; engine and tests built against the same libstdc++ (`__GLIBCXX__`).
   * Under `asan-ubsan`: the UB fixture fails with the UBSan report, the leak fixture fails with the LeakSanitizer report, and both clean controls pass.
   * One symbol each from the VMA and cgltf implementation libraries links and runs.
   * All checker self-tests pass.

@@ -1,6 +1,6 @@
 #include "axiom/core/build_info.hpp"
 
-#include <version> // defines _LIBCPP_VERSION under libc++
+#include <version> // defines __GLIBCXX__ under libstdc++
 
 namespace axiom::core {
 
@@ -20,9 +20,9 @@ bool engineBuiltWithRtti() noexcept {
 #endif
 }
 
-long engineLibcxxVersion() noexcept {
-#if defined(_LIBCPP_VERSION)
-  return _LIBCPP_VERSION;
+long engineLibstdcxxVersion() noexcept {
+#if defined(__GLIBCXX__)
+  return __GLIBCXX__;
 #else
   return 0;
 #endif

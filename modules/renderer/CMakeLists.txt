@@ -1,8 +1,9 @@
 axiom_add_module(renderer
   SOURCES src/module_info.cpp src/vulkan_instance.cpp src/vulkan_device.cpp src/gpu_allocator.cpp
+    src/command_context.cpp src/offscreen_target.cpp
   DEPS axiom::core axiom::math Vulkan::Vulkan axiom_vma_impl)
 axiom_add_module_tests(renderer SOURCES tests/test_renderer.cpp tests/test_vulkan_instance.cpp tests/test_vulkan_device.cpp
-  tests/test_gpu_allocator.cpp)
+  tests/test_gpu_allocator.cpp tests/test_offscreen_target.cpp)
 
 # Renderer tests run on lavapipe only (ROADMAP Stage 1). If the ICD is missing, the device tests
 # fail (no silent pass): they require VK_DRIVER_ID_MESA_LLVMPIPE.

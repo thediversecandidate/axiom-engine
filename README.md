@@ -5,7 +5,7 @@ An open-source C++23 / Vulkan 3D engine designed to be developed by LLM coding a
 **Status:** Stage 0 (tooling and CI). Nothing renders yet. See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the plan and [`docs/STATE.md`](docs/STATE.md) for where work stands.
 
 ## Build (Linux, Ubuntu 26.04)
-Requirements: Clang 21 with libc++ 21, CMake ≥ 3.25, Ninja, Git, Vulkan headers and loader, Python 3 (`pip install -r scripts/requirements.txt`). The exact package set is in [`ci/packages.txt`](ci/packages.txt).
+Requirements: Clang 21 with libstdc++ (GCC 15), CMake ≥ 3.25, Ninja, Git, Vulkan headers and loader, Python 3 (`pip install -r scripts/requirements.txt`). The exact package set is in [`ci/packages.txt`](ci/packages.txt).
 
 ```sh
 cmake --preset debug          # or asan-ubsan, release
