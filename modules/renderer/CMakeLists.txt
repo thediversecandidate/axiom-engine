@@ -3,7 +3,7 @@ axiom_add_module(renderer
   DEPS axiom::core axiom::math axiom::renderer_vk)
 axiom_add_module_tests(renderer SOURCES tests/test_renderer.cpp tests/test_offscreen_target.cpp
   tests/test_shader_library.cpp tests/test_triangle_draw.cpp
-  tests/test_triangle_landmarks.cpp)
+  tests/test_triangle_landmarks.cpp tests/test_triangle_culling.cpp)
 target_compile_definitions(axiom_renderer_tests PRIVATE AXIOM_GOLDEN_DIR="${PROJECT_SOURCE_DIR}/tests/golden")
 axiom_add_shaders(axiom_renderer shaders/triangle.vert shaders/triangle.frag)
 

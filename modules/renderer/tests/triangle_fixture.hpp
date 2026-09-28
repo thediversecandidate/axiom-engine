@@ -7,7 +7,9 @@
 #include "axiom/renderer_vk/command_context.hpp"
 #include "axiom/renderer_vk/host_buffer.hpp"
 #include "axiom/renderer_vk/validation.hpp"
+#include "golden_reader.hpp"
 
+#include <array>
 #include <catch2/catch_test_macros.hpp>
 #include <cstddef>
 #include <cstdint>
@@ -28,6 +30,30 @@ struct RenderedFrame {
 };
 
 inline constexpr std::uint32_t kFrameSize = 256;
+
+// The frozen Stage 1 scene from tests/golden/triangle.json: camera MVP and the three vertices.
+struct TriangleScene {
+  float mvp[16]; // column-major
+  std::array<renderer::TriangleVertex, 3> vertices;
+};
+
+inline TriangleScene loadTriangleScene(const std::string &json) {
+  TriangleScene scene{};
+  const auto mvp = goldenNumbers(json, "mvp_column_major");
+  REQUIRE(mvp.size() == 16);
+  for (int i = 0; i < 16; ++i) {
+    scene.mvp[i] = static_cast<float>(mvp[i]);
+  }
+  const auto v = goldenNumbers(json, "vertices");
+  REQUIRE(v.size() == 18);
+  for (int i = 0; i < 3; ++i) {
+    for (int k = 0; k < 3; ++k) {
+      scene.vertices[i].position[k] = static_cast<float>(v[i * 6 + k]);
+      scene.vertices[i].color[k] = static_cast<float>(v[i * 6 + 3 + k]);
+    }
+  }
+  return scene;
+}
 
 inline RenderedFrame renderTriangles(std::span<const renderer::TriangleVertex> vertices,
                                      std::span<const TriangleDraw> draws) {

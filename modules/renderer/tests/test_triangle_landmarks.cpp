@@ -4,6 +4,7 @@
 #include "golden_reader.hpp"
 #include "triangle_fixture.hpp"
 
+#include <algorithm>
 #include <array>
 #include <catch2/catch_test_macros.hpp>
 #include <cmath>
@@ -26,20 +27,10 @@ struct Golden {
 Golden loadGolden() {
   const std::string json = test::readGolden("triangle.json");
   Golden g;
-  const auto mvp = test::goldenNumbers(json, "mvp_column_major");
-  REQUIRE(mvp.size() == 16);
-  for (int i = 0; i < 16; ++i) {
-    g.draw.mvp[i] = static_cast<float>(mvp[i]);
-  }
+  const test::TriangleScene scene = test::loadTriangleScene(json);
+  std::copy(std::begin(scene.mvp), std::end(scene.mvp), g.draw.mvp);
   g.draw.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-  const auto v = test::goldenNumbers(json, "vertices");
-  REQUIRE(v.size() == 18);
-  for (int i = 0; i < 3; ++i) {
-    for (int k = 0; k < 3; ++k) {
-      g.vertices[i].position[k] = static_cast<float>(v[i * 6 + k]);
-      g.vertices[i].color[k] = static_cast<float>(v[i * 6 + 3 + k]);
-    }
-  }
+  g.vertices = scene.vertices;
   g.landmarks = test::goldenNumbers(json, "landmarks");
   REQUIRE(g.landmarks.size() % 2 == 0);
   REQUIRE(test::goldenNumbers(json, "width") == std::vector<double>{256});
