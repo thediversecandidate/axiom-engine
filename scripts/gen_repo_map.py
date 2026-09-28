@@ -62,11 +62,31 @@ def contract_lines(node, src: bytes) -> list[str]:
     return lines
 
 
+def summarize_special(name: str, sigs: list[str]) -> list[str]:
+    """Collapses constructors/destructor/assignment boilerplate of class `name` into one line."""
+    n = re.escape(name)
+    special = re.compile(rf"^(~?{n}\s*\(|{n}\s*&\s*operator=\s*\()")
+    kept = [s for s in sigs if not special.search(s)]
+    specials = [s for s in sigs if special.search(s)]
+    if not specials:
+        return sigs
+    traits = []
+    if any(re.search(rf"^{n}\s*\(\s*const {n}\s*&\s*\)\s*=\s*delete", s) for s in specials):
+        traits.append("move-only" if any(re.search(rf"^{n}\s*\(\s*{n}\s*&&", s) for s in specials) else "non-copyable")
+    if any(re.search(rf"^{n}\s*\(\s*\)", s) for s in specials):
+        traits.append("default-constructible")
+    others = [s for s in specials if not re.search(rf"^(~{n}|{n}\s*\(\s*\)|{n}\s*\(\s*(const )?{n}\s*&|{n}\s*&\s*operator=)", s)]
+    return ([f"({', '.join(traits)})"] if traits else []) + others + kept
+
+
 def members(node, src: bytes) -> list[str]:
+    name_node = node.child_by_field_name("name")
+    name = src[name_node.start_byte:name_node.end_byte].decode() if name_node else ""
     for child in [node] + list(node.children):
         for part in child.children:
             if part.type == "field_declaration_list":
-                return [signature(m, src) for m in part.children if m.type in MEMBER_TYPES]
+                sigs = [signature(m, src) for m in part.children if m.type in MEMBER_TYPES]
+                return summarize_special(name, sigs) if name else sigs
             if part.type == "enumerator_list":
                 return [", ".join(squash(src[e.start_byte:e.end_byte].decode())
                                   for e in part.children if e.type == "enumerator")]

@@ -5,4 +5,4 @@
 - `core` (depends on: none) — 3 public header(s) → `core.md`
 - `math` (depends on: none) — 1 public header(s) → `math.md`
 - `physics` (depends on: core, math) — 1 public header(s) → `physics.md`
-- `renderer` (depends on: core, math) — 5 public header(s) → `renderer.md`
+- `renderer` (depends on: core, math) — 7 public header(s) → `renderer.md`

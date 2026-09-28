@@ -7,7 +7,7 @@
 * `scripts/axiom_tokens.py`: shared counter. Uses the pinned tokenizer when present, otherwise the conservative ceil(bytes/3) fallback, labelled "fallback" (ADR-0003).
 
 ## 2. Repository Maps (`scripts/gen_repo_map.py`)
-* Per public declaration: signature plus `/// @owns @lifetime @thread @errors` lines; per module: headers with one-line purpose.
+* Per public declaration: signature plus `/// @owns @lifetime @thread @errors` lines; per module: headers with one-line purpose. Boilerplate special members (default/copy/move constructors, assignments, destructor) collapse into one trait line such as `(move-only, default-constructible)`; any other constructor is listed.
 * Never truncated. Parse error → AX-MAP-001; over budget (index 1,000, module 2,500) → AX-MAP-002; `--check` regenerates into a temp directory and diffs → AX-MAP-003.
 
 ## 3. File Limits (`scripts/check_line_limit.py`)

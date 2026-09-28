@@ -12,8 +12,8 @@ Depends on: none
   /// True if the engine translation unit was compiled with exceptions enabled.
 - `[[nodiscard]] bool engineBuiltWithRtti() noexcept`
   /// True if the engine translation unit was compiled with RTTI enabled.
-- `[[nodiscard]] long engineLibcxxVersion() noexcept`
-  /// _LIBCPP_VERSION seen by the engine translation unit, or 0 if not built against libc++.
+- `[[nodiscard]] long engineLibstdcxxVersion() noexcept`
+  /// __GLIBCXX__ (libstdc++ release date) seen by the engine translation unit, or 0 if not libstdc++.
 
 ## `modules/core/include/axiom/core/error.hpp` — Engine-wide error type (CONVENTIONS §2). Never call .value() on a Result.
 - `enum class ErrorCode : std::uint32_t`
