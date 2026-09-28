@@ -24,9 +24,9 @@ TEST_CASE("built-in shaders are SPIR-V", "[renderer][stage1]") {
 TEST_CASE("built-in shaders create Vulkan shader modules with zero validation errors", "[renderer][stage1]") {
   ValidationSink sink;
   {
-    auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink});
+    auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink, {}});
     REQUIRE(instance.has_value());
-    auto device = VulkanDevice::create(*instance, DeviceDesc{VK_DRIVER_ID_MESA_LLVMPIPE});
+    auto device = VulkanDevice::create(*instance, DeviceDesc{VK_DRIVER_ID_MESA_LLVMPIPE, VK_NULL_HANDLE});
     REQUIRE(device.has_value());
     for (ShaderId id : kAllShaders) {
       const auto words = shaderSpirv(id);
@@ -45,9 +45,9 @@ TEST_CASE("built-in shaders create Vulkan shader modules with zero validation er
 
 TEST_CASE("corrupted SPIR-V is rejected by the validation layer (the check is real)", "[renderer][stage1]") {
   ValidationSink sink;
-  auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink});
+  auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink, {}});
   REQUIRE(instance.has_value());
-  auto device = VulkanDevice::create(*instance, DeviceDesc{VK_DRIVER_ID_MESA_LLVMPIPE});
+  auto device = VulkanDevice::create(*instance, DeviceDesc{VK_DRIVER_ID_MESA_LLVMPIPE, VK_NULL_HANDLE});
   REQUIRE(device.has_value());
 
   const auto good = shaderSpirv(ShaderId::kTriangleFrag);

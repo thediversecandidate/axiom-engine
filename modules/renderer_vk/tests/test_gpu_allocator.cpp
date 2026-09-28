@@ -8,9 +8,9 @@ using namespace axiom::renderer;
 TEST_CASE("VMA allocator allocates and frees a buffer with zero validation errors", "[renderer][stage1]") {
   ValidationSink sink;
   {
-    auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink});
+    auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink, {}});
     REQUIRE(instance.has_value());
-    auto device = VulkanDevice::create(*instance, DeviceDesc{VK_DRIVER_ID_MESA_LLVMPIPE});
+    auto device = VulkanDevice::create(*instance, DeviceDesc{VK_DRIVER_ID_MESA_LLVMPIPE, VK_NULL_HANDLE});
     REQUIRE(device.has_value());
     auto allocator = GpuAllocator::create(*instance, *device);
     REQUIRE(allocator.has_value());

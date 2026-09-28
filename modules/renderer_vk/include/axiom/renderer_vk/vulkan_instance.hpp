@@ -4,6 +4,7 @@
 #include "axiom/core/error.hpp"
 #include "axiom/renderer_vk/validation.hpp"
 
+#include <span>
 #include <vulkan/vulkan.h>
 
 namespace axiom::renderer {
@@ -14,6 +15,9 @@ struct InstanceDesc {
   bool enableValidation = true;
   /// Receives validation counts. Required when enableValidation is true.
   ValidationSink *sink = nullptr;
+  /// Additional instance extensions that must be enabled (e.g. from SDL_Vulkan_GetInstanceExtensions, or
+  /// VK_KHR_surface + VK_EXT_headless_surface in tests). Creation fails with kUnsupported if one is missing.
+  std::span<const char *const> extraExtensions;
 };
 
 /// @owns the VkInstance and its debug messenger; move-only.

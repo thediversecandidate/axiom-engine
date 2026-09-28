@@ -28,9 +28,9 @@ constexpr std::array<TriangleVertex, 3> kTriangle{{
 TEST_CASE("the triangle pipeline draws one triangle into the offscreen target", "[renderer][stage1]") {
   ValidationSink sink;
   {
-    auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink});
+    auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink, {}});
     REQUIRE(instance.has_value());
-    auto device = VulkanDevice::create(*instance, DeviceDesc{VK_DRIVER_ID_MESA_LLVMPIPE});
+    auto device = VulkanDevice::create(*instance, DeviceDesc{VK_DRIVER_ID_MESA_LLVMPIPE, VK_NULL_HANDLE});
     REQUIRE(device.has_value());
     auto allocator = GpuAllocator::create(*instance, *device);
     REQUIRE(allocator.has_value());

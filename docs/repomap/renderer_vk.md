@@ -53,11 +53,12 @@ Depends on: core, math
 ## `modules/renderer_vk/include/axiom/renderer_vk/vulkan_device.hpp` — Physical-device selection and logical-device creation with explicit Vulkan 1.3 feature enables.
 - `struct DeviceDesc`
   - `std::optional<VkDriverId> requiredDriver`
+  - `VkSurfaceKHR presentSurface = VK_NULL_HANDLE`
 - `class VulkanDevice`
   /// @owns the VkDevice; move-only.
   /// @lifetime must be destroyed before the VulkanInstance it was created from.
   /// @errors create() fails with kUnsupported if no device offers Vulkan 1.3, a graphics queue,
-  ///         dynamicRendering and synchronization2 (and the required driver, if any).
+  ///         dynamicRendering and synchronization2 (and the required driver and presentation, if requested).
   - `(move-only, default-constructible)`
   - `[[nodiscard]] static core::Result<VulkanDevice> create(const VulkanInstance &instance, const DeviceDesc &desc)`
   - `[[nodiscard]] VkDevice handle() const noexcept`
@@ -65,18 +66,21 @@ Depends on: core, math
   - `[[nodiscard]] VkQueue graphicsQueue() const noexcept`
   - `[[nodiscard]] std::uint32_t graphicsQueueFamily() const noexcept`
   - `[[nodiscard]] VkDriverId driverId() const noexcept`
+  - `[[nodiscard]] bool presentEnabled() const noexcept`
   - `void reset() noexcept`
   - `VkPhysicalDevice physical_ = VK_NULL_HANDLE`
   - `VkDevice device_ = VK_NULL_HANDLE`
   - `VkQueue queue_ = VK_NULL_HANDLE`
   - `std::uint32_t queueFamily_ = 0`
   - `VkDriverId driverId_ = static_cast<VkDriverId>(0)`
+  - `bool presentEnabled_ = false`
 
 ## `modules/renderer_vk/include/axiom/renderer_vk/vulkan_instance.hpp` — Vulkan 1.3 instance with the Khronos validation layer and a debug-utils messenger.
 - `struct InstanceDesc`
   - `const char *appName = "axiom"`
   - `bool enableValidation = true`
   - `ValidationSink *sink = nullptr`
+  - `std::span<const char *const> extraExtensions`
 - `class VulkanInstance`
   /// @owns the VkInstance and its debug messenger; move-only.
   /// @lifetime destroy every device created from it first; desc.sink must outlive it.

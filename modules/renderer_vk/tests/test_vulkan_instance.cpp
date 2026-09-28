@@ -11,7 +11,7 @@ using axiom::renderer::VulkanInstance;
 TEST_CASE("Vulkan 1.3 instance with validation creates and tears down with zero errors", "[renderer][stage1]") {
   ValidationSink sink;
   {
-    auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink});
+    auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink, {}});
     REQUIRE(instance.has_value());
     CHECK(instance->handle() != VK_NULL_HANDLE);
     CHECK(instance->validationEnabled());
@@ -22,7 +22,7 @@ TEST_CASE("Vulkan 1.3 instance with validation creates and tears down with zero 
 
 TEST_CASE("an ERROR message reaches the sink (the failure path is wired)", "[renderer][stage1]") {
   ValidationSink sink;
-  auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink});
+  auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink, {}});
   REQUIRE(instance.has_value());
   instance->submitTestMessage(VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT, "axiom deliberate error");
   instance->submitTestMessage(VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT, "axiom deliberate warning");
@@ -32,14 +32,14 @@ TEST_CASE("an ERROR message reaches the sink (the failure path is wired)", "[ren
 }
 
 TEST_CASE("validation without a sink is rejected", "[renderer][stage1]") {
-  auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, nullptr});
+  auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, nullptr, {}});
   REQUIRE_FALSE(instance.has_value());
   CHECK(instance.error().code == axiom::core::ErrorCode::kInvalidArgument);
 }
 
 TEST_CASE("moving an instance transfers ownership exactly once", "[renderer][stage1]") {
   ValidationSink sink;
-  auto created = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink});
+  auto created = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink, {}});
   REQUIRE(created.has_value());
   VulkanInstance moved = std::move(*created);
   CHECK(created->handle() == VK_NULL_HANDLE);

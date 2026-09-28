@@ -55,6 +55,19 @@ bool layerAvailable(const char *name) {
   return false;
 }
 
+bool instanceExtensionAvailable(const char *name) {
+  std::uint32_t count = 0;
+  vkEnumerateInstanceExtensionProperties(nullptr, &count, nullptr);
+  std::vector<VkExtensionProperties> extensions(count);
+  vkEnumerateInstanceExtensionProperties(nullptr, &count, extensions.data());
+  for (const auto &extension : extensions) {
+    if (std::strcmp(extension.extensionName, name) == 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
 } // namespace
 
 core::Result<VulkanInstance> VulkanInstance::create(const InstanceDesc &desc) {
@@ -76,7 +89,16 @@ core::Result<VulkanInstance> VulkanInstance::create(const InstanceDesc &desc) {
   app.apiVersion = VK_API_VERSION_1_3;
 
   const std::array<const char *, 1> layers{kValidationLayer};
-  const std::array<const char *, 1> extensions{VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
+  std::vector<const char *> extensions;
+  if (desc.enableValidation) {
+    extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+  }
+  for (const char *name : desc.extraExtensions) {
+    if (!instanceExtensionAvailable(name)) {
+      return fail(ErrorCode::kUnsupported, "a requested instance extension is not available");
+    }
+    extensions.push_back(name);
+  }
   // Chained so messages emitted during vkCreateInstance / vkDestroyInstance are also counted.
   VkDebugUtilsMessengerCreateInfoEXT chained = messengerInfo(desc.sink);
   // Disable the layer's on-disk shader-validation cache: with it, a module seen in an earlier run
@@ -97,9 +119,9 @@ core::Result<VulkanInstance> VulkanInstance::create(const InstanceDesc &desc) {
     info.pNext = &layerSettings;
     info.enabledLayerCount = static_cast<std::uint32_t>(layers.size());
     info.ppEnabledLayerNames = layers.data();
-    info.enabledExtensionCount = static_cast<std::uint32_t>(extensions.size());
-    info.ppEnabledExtensionNames = extensions.data();
   }
+  info.enabledExtensionCount = static_cast<std::uint32_t>(extensions.size());
+  info.ppEnabledExtensionNames = extensions.data();
 
   VulkanInstance result;
   if (vkCreateInstance(&info, nullptr, &result.instance_) != VK_SUCCESS) {

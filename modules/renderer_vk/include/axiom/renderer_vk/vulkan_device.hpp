@@ -14,12 +14,15 @@ struct DeviceDesc {
   /// If set, only a device whose VkPhysicalDeviceDriverProperties::driverID matches is accepted
   /// (CI uses VK_DRIVER_ID_MESA_LLVMPIPE to assert lavapipe identity).
   std::optional<VkDriverId> requiredDriver;
+  /// If set, the device must offer VK_KHR_swapchain and a graphics queue family that can present to this
+  /// surface; VK_KHR_swapchain is then enabled. The surface must outlive device creation.
+  VkSurfaceKHR presentSurface = VK_NULL_HANDLE;
 };
 
 /// @owns the VkDevice; move-only.
 /// @lifetime must be destroyed before the VulkanInstance it was created from.
 /// @errors create() fails with kUnsupported if no device offers Vulkan 1.3, a graphics queue,
-///         dynamicRendering and synchronization2 (and the required driver, if any).
+///         dynamicRendering and synchronization2 (and the required driver and presentation, if requested).
 class VulkanDevice {
 public:
   [[nodiscard]] static core::Result<VulkanDevice> create(const VulkanInstance &instance, const DeviceDesc &desc);
@@ -36,6 +39,8 @@ public:
   [[nodiscard]] VkQueue graphicsQueue() const noexcept { return queue_; }
   [[nodiscard]] std::uint32_t graphicsQueueFamily() const noexcept { return queueFamily_; }
   [[nodiscard]] VkDriverId driverId() const noexcept { return driverId_; }
+  /// True if VK_KHR_swapchain is enabled and the graphics queue can present to DeviceDesc::presentSurface.
+  [[nodiscard]] bool presentEnabled() const noexcept { return presentEnabled_; }
 
 private:
   void reset() noexcept;
@@ -45,6 +50,7 @@ private:
   VkQueue queue_ = VK_NULL_HANDLE;
   std::uint32_t queueFamily_ = 0;
   VkDriverId driverId_ = static_cast<VkDriverId>(0);
+  bool presentEnabled_ = false;
 };
 
 } // namespace axiom::renderer

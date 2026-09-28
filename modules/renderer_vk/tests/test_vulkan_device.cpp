@@ -15,7 +15,7 @@ const DeviceDesc kLavapipe{VK_DRIVER_ID_MESA_LLVMPIPE};
 TEST_CASE("lavapipe device is selected, identified and torn down with zero errors", "[renderer][stage1]") {
   ValidationSink sink;
   {
-    auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink});
+    auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink, {}});
     REQUIRE(instance.has_value());
     auto device = VulkanDevice::create(*instance, kLavapipe);
     REQUIRE(device.has_value());
@@ -28,7 +28,7 @@ TEST_CASE("lavapipe device is selected, identified and torn down with zero error
 
 TEST_CASE("the validation layer reports a real API misuse", "[renderer][stage1]") {
   ValidationSink sink;
-  auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink});
+  auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink, {}});
   REQUIRE(instance.has_value());
   auto device = VulkanDevice::create(*instance, kLavapipe);
   REQUIRE(device.has_value());
@@ -49,9 +49,9 @@ TEST_CASE("the validation layer reports a real API misuse", "[renderer][stage1]"
 
 TEST_CASE("a required driver that is not present is reported as unsupported", "[renderer][stage1]") {
   ValidationSink sink;
-  auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink});
+  auto instance = VulkanInstance::create(InstanceDesc{"axiom-test", true, &sink, {}});
   REQUIRE(instance.has_value());
-  auto device = VulkanDevice::create(*instance, DeviceDesc{VK_DRIVER_ID_NVIDIA_PROPRIETARY});
+  auto device = VulkanDevice::create(*instance, DeviceDesc{VK_DRIVER_ID_NVIDIA_PROPRIETARY, VK_NULL_HANDLE});
   REQUIRE_FALSE(device.has_value());
   CHECK(device.error().code == axiom::core::ErrorCode::kUnsupported);
 }

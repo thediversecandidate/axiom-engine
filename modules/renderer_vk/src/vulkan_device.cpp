@@ -1,5 +1,6 @@
 #include "axiom/renderer_vk/vulkan_device.hpp"
 
+#include <cstring>
 #include <utility>
 #include <vector>
 
@@ -16,17 +17,38 @@ struct Candidate {
   bool discrete = false;
 };
 
-std::optional<std::uint32_t> graphicsFamily(VkPhysicalDevice device) {
+// First graphics family; with a present surface, the first graphics family that can also present to it.
+std::optional<std::uint32_t> graphicsFamily(VkPhysicalDevice device, VkSurfaceKHR surface) {
   std::uint32_t count = 0;
   vkGetPhysicalDeviceQueueFamilyProperties(device, &count, nullptr);
   std::vector<VkQueueFamilyProperties> families(count);
   vkGetPhysicalDeviceQueueFamilyProperties(device, &count, families.data());
   for (std::uint32_t i = 0; i < count; ++i) {
-    if (families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+    if (!(families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)) {
+      continue;
+    }
+    VkBool32 present = VK_TRUE;
+    if (surface != VK_NULL_HANDLE && vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &present) != VK_SUCCESS) {
+      present = VK_FALSE;
+    }
+    if (present) {
       return i;
     }
   }
   return std::nullopt;
+}
+
+bool deviceExtensionAvailable(VkPhysicalDevice device, const char *name) {
+  std::uint32_t count = 0;
+  vkEnumerateDeviceExtensionProperties(device, nullptr, &count, nullptr);
+  std::vector<VkExtensionProperties> extensions(count);
+  vkEnumerateDeviceExtensionProperties(device, nullptr, &count, extensions.data());
+  for (const auto &extension : extensions) {
+    if (std::strcmp(extension.extensionName, name) == 0) {
+      return true;
+    }
+  }
+  return false;
 }
 
 std::optional<Candidate> evaluate(VkPhysicalDevice device, const DeviceDesc &desc) {
@@ -53,7 +75,10 @@ std::optional<Candidate> evaluate(VkPhysicalDevice device, const DeviceDesc &des
     return std::nullopt;
   }
 
-  const auto family = graphicsFamily(device);
+  if (desc.presentSurface != VK_NULL_HANDLE && !deviceExtensionAvailable(device, VK_KHR_SWAPCHAIN_EXTENSION_NAME)) {
+    return std::nullopt;
+  }
+  const auto family = graphicsFamily(device, desc.presentSurface);
   if (!family) {
     return std::nullopt;
   }
@@ -77,7 +102,8 @@ core::Result<VulkanDevice> VulkanDevice::create(const VulkanInstance &instance, 
     }
   }
   if (!chosen) {
-    return fail(ErrorCode::kUnsupported, "no Vulkan 1.3 device with dynamicRendering + synchronization2");
+    return fail(ErrorCode::kUnsupported, "no Vulkan 1.3 device with dynamicRendering + synchronization2"
+                                         " (and presentation to the surface, if requested)");
   }
 
   const float priority = 1.0f;
@@ -101,6 +127,12 @@ core::Result<VulkanDevice> VulkanDevice::create(const VulkanInstance &instance, 
   info.pNext = &enable;
   info.queueCreateInfoCount = 1;
   info.pQueueCreateInfos = &queueInfo;
+  const char *swapchainExtension = VK_KHR_SWAPCHAIN_EXTENSION_NAME;
+  const bool present = desc.presentSurface != VK_NULL_HANDLE;
+  if (present) {
+    info.enabledExtensionCount = 1;
+    info.ppEnabledExtensionNames = &swapchainExtension;
+  }
 
   VulkanDevice result;
   if (vkCreateDevice(chosen->device, &info, nullptr, &result.device_) != VK_SUCCESS) {
@@ -109,14 +141,15 @@ core::Result<VulkanDevice> VulkanDevice::create(const VulkanInstance &instance, 
   result.physical_ = chosen->device;
   result.queueFamily_ = chosen->queueFamily;
   result.driverId_ = chosen->driverId;
+  result.presentEnabled_ = present;
   vkGetDeviceQueue(result.device_, result.queueFamily_, 0, &result.queue_);
   return result;
 }
 
 VulkanDevice::VulkanDevice(VulkanDevice &&other) noexcept
     : physical_(std::exchange(other.physical_, VK_NULL_HANDLE)), device_(std::exchange(other.device_, VK_NULL_HANDLE)),
-      queue_(std::exchange(other.queue_, VK_NULL_HANDLE)), queueFamily_(other.queueFamily_),
-      driverId_(other.driverId_) {}
+      queue_(std::exchange(other.queue_, VK_NULL_HANDLE)), queueFamily_(other.queueFamily_), driverId_(other.driverId_),
+      presentEnabled_(std::exchange(other.presentEnabled_, false)) {}
 
 VulkanDevice &VulkanDevice::operator=(VulkanDevice &&other) noexcept {
   if (this != &other) {
@@ -126,6 +159,7 @@ VulkanDevice &VulkanDevice::operator=(VulkanDevice &&other) noexcept {
     queue_ = std::exchange(other.queue_, VK_NULL_HANDLE);
     queueFamily_ = other.queueFamily_;
     driverId_ = other.driverId_;
+    presentEnabled_ = std::exchange(other.presentEnabled_, false);
   }
   return *this;
 }
@@ -140,6 +174,7 @@ void VulkanDevice::reset() noexcept {
   }
   physical_ = VK_NULL_HANDLE;
   queue_ = VK_NULL_HANDLE;
+  presentEnabled_ = false;
 }
 
 } // namespace axiom::renderer
