@@ -79,12 +79,22 @@ core::Result<VulkanInstance> VulkanInstance::create(const InstanceDesc &desc) {
   const std::array<const char *, 1> extensions{VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
   // Chained so messages emitted during vkCreateInstance / vkDestroyInstance are also counted.
   VkDebugUtilsMessengerCreateInfoEXT chained = messengerInfo(desc.sink);
+  // Disable the layer's on-disk shader-validation cache: with it, a module seen in an earlier run
+  // is not re-validated, so a "zero validation errors" test could pass without any check.
+  const VkBool32 kFalse = VK_FALSE;
+  VkLayerSettingEXT noShaderCache{kValidationLayer, "check_shaders_caching", VK_LAYER_SETTING_TYPE_BOOL32_EXT, 1,
+                                  &kFalse};
+  VkLayerSettingsCreateInfoEXT layerSettings{};
+  layerSettings.sType = VK_STRUCTURE_TYPE_LAYER_SETTINGS_CREATE_INFO_EXT;
+  layerSettings.pNext = &chained;
+  layerSettings.settingCount = 1;
+  layerSettings.pSettings = &noShaderCache;
 
   VkInstanceCreateInfo info{};
   info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
   info.pApplicationInfo = &app;
   if (desc.enableValidation) {
-    info.pNext = &chained;
+    info.pNext = &layerSettings;
     info.enabledLayerCount = static_cast<std::uint32_t>(layers.size());
     info.ppEnabledLayerNames = layers.data();
     info.enabledExtensionCount = static_cast<std::uint32_t>(extensions.size());

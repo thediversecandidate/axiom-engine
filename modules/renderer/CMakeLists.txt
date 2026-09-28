@@ -16,3 +16,12 @@ if(AXIOM_LAVAPIPE_ICD)
 else()
   message(WARNING "lavapipe ICD not found: renderer device tests will fail")
 endif()
+
+# Second run in the same environment: fails if any validation-layer state persisted across runs
+# (e.g. the on-disk shader-validation cache) weakens the "zero validation errors" checks.
+add_test(NAME renderer.unit.second_run COMMAND axiom_renderer_tests)
+set_tests_properties(renderer.unit.second_run PROPERTIES DEPENDS renderer.unit)
+if(AXIOM_LAVAPIPE_ICD)
+  set_tests_properties(renderer.unit.second_run PROPERTIES
+    ENVIRONMENT "VK_DRIVER_FILES=${AXIOM_LAVAPIPE_ICD};VK_ICD_FILENAMES=${AXIOM_LAVAPIPE_ICD}")
+endif()

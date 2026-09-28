@@ -17,3 +17,7 @@
 * First CI run: the HTTPS-only snapshot service needs `ca-certificates` bootstrapped into the bare base image (ADR-0002).
 * CI logs are unreachable from the authoring environment, so every CI step reports failures and key facts as annotations (`scripts/ci_annotate.py`).
 * The first real pre-flight refused an ordinary session: the always-loaded docs were 3,735 of 3,000 tokens under the fallback counter. Fixed by splitting `CONTEXT_RULES.md` (ADR-0003); now 2,409 of 3,000.
+
+## Stage 1 findings
+* **libc++ vs libstdc++ (ADR-0004):** under ASan, the first GPU submit showed libstdc++ exceptions inside the validation layer being destroyed by libc++abi. Switched to libstdc++.
+* **Validation-layer shader cache:** the layer's on-disk cache (`~/.cache/shader_validation_cache-0.bin`) skipped re-validating shader modules seen in earlier runs, so a deliberate-invalid-SPIR-V test passed on a fresh machine (CI) and failed on the second local run. `VulkanInstance` now disables `check_shaders_caching` via `VK_EXT_layer_settings`, and `renderer.unit.second_run` runs the suite twice in CI.

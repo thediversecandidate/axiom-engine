@@ -20,4 +20,4 @@
 | Date | Agent | Completed | Peak context | DoD failures | Peak VRAM |
 | --- | --- | --- | --- | --- | --- |
 | 2026-09-27 | hosted Claude (Stage 0) | yes | n/a (hosted) | 0 (3 CI infra fixes) | n/a |
-| 2026-09-28 | hosted Claude (Stage 1: 1a–3a) | yes | n/a (hosted) | 1 (committed with a failing repo-map check; fixed) | n/a |
+| 2026-09-28 | hosted Claude (Stage 1: 1a–3a) | yes | n/a (hosted) | 2 (committed with a failing check twice; commits are now gated on the full local run) | n/a |
