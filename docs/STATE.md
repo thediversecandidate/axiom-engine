@@ -2,7 +2,7 @@
 
 ## Current
 * **Stage:** 1 (Vertical Slice), branch `stage-1-triangle`. Stage 0 merged (see `docs/HISTORY.md`).
-* **Done in Stage 1:** 1a `VulkanInstance` + validation sink; 1b `VulkanDevice` (lavapipe identity, explicit feature enables, a real validation error detected); 2a `GpuAllocator` (VMA); 2b `CommandContext` + `OffscreenTarget` (dynamic-rendering clear, readback, sRGB-encoded bytes match an independent oracle); 3a glslc build step + `shaderSpirv()` (valid modules, and a corrupted module is caught); 3b `TrianglePipeline` + `HostBuffer`, one CCW triangle drawn offscreen with zero validation errors; 4 frozen scene `tests/golden/triangle.json` (perspective camera, apex farther than base), landmark colors vs. a CPU perspective-correct sRGB oracle (±2) and coverage vs. analytic area (±1%); an affine-interpolation sabotage is caught; 5 culling: reversed winding draws 0 px; ordinary → mirrored (CW) → ordinary in one command buffer, each paired with its reversed copy, 1,050 px per triangle; a forced-CCW sabotage is caught.
+* **Done in Stage 1:** steps 1a–5 (instance, device, allocator, offscreen target, shaders, triangle pipeline, landmark/coverage and culling tests); per-step detail in `docs/HISTORY.md`.
 * **Next atomic step:** 6 — full-image comparison to a reviewed reference (≤ 65 px differ by > 2/255), actual/reference/diff images uploaded as CI artifacts on failure (renderer + CI workflow; reference generated once by a script and reviewed, never regenerated automatically).
 * **Remaining Stage 1 steps:** 7 SDL3 swapchain path (local only); then PR and merge.
 * **Sizing rule (found in step 1):** new code per session must fit the working room (3,268 tokens ≈ 10 KB at the fallback rate), so steps are split to about one source file plus its test.

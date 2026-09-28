@@ -1,5 +1,18 @@
 # History (not loaded by default; read only when a task needs it)
 
+## Stage 1 (in progress, branch `stage-1-triangle`)
+
+### Steps verified in CI (all three presets + checks, Clang 21)
+* 1a `VulkanInstance` + validation sink
+* 1b `VulkanDevice` (lavapipe identity, explicit feature enables, a real validation error detected)
+* 2a `GpuAllocator` (VMA)
+* 2b `CommandContext` + `OffscreenTarget` (dynamic-rendering clear, readback, sRGB-encoded bytes match an independent oracle)
+* 3a glslc build step + `shaderSpirv()` (valid modules, and a corrupted module is caught)
+* 3b `TrianglePipeline` + `HostBuffer`, one CCW triangle drawn offscreen with zero validation errors
+* 4 frozen scene `tests/golden/triangle.json` (perspective camera, apex farther than base), landmark colors vs. a CPU perspective-correct sRGB oracle (±2) and coverage vs. analytic area (±1%); an affine-interpolation sabotage is caught
+* 5 culling: reversed winding draws 0 px; ordinary → mirrored (CW) → ordinary in one command buffer, each paired with its reversed copy, 1,050 px per triangle; a forced-CCW sabotage is caught
+* Renderer split into `renderer_vk` + `renderer` when the renderer map reached 2,826 / 2,500 tokens (ADR-0005)
+
 ## Stage 0 (merged in PR #1, 2026-09-28)
 
 ### Verified locally (Clang 18 via the local-only override; not a Definition-of-Done result)
