@@ -11,5 +11,5 @@ CONVENTIONS §1 requires every apt package in the CI image to be pinned. Writing
 3. **Local-only compiler override.** `-DAXIOM_CLANG_VERSION=<major> -DAXIOM_ALLOW_UNPINNED_COMPILER=ON` lets a machine without Clang 21 build for development. CI never sets it, and only CI results with Clang 21 satisfy the Definition of Done.
 
 ## Consequences
-* Follow-up (open in STATE.md): pin the `ubuntu:26.04` base image by digest once the first CI run records it.
+* Base image pinned to `ubuntu:26.04@sha256:da6fc2be547864451aa253836dd926da33623312df4a9a243e35dc877c378a78`, the digest reported by the first successful CI run (2026-09-28). The image contains Clang 21.1.8, CMake 4.2.3 and Python 3.14.4.
 * Updating any package means changing the snapshot ID, which requires a new ADR.

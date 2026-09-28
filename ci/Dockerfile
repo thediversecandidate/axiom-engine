@@ -2,7 +2,7 @@
 # Every apt package is pinned through the Ubuntu snapshot service: the whole archive is frozen at
 # AXIOM_APT_SNAPSHOT, and the exact resolved versions are written to /opt/axiom-ci/packages.lock.
 # Changing the snapshot, the base image or the package list requires an ADR.
-FROM ubuntu:26.04
+FROM ubuntu:26.04@sha256:da6fc2be547864451aa253836dd926da33623312df4a9a243e35dc877c378a78
 
 ARG AXIOM_APT_SNAPSHOT=20260927T000000Z
 ENV DEBIAN_FRONTEND=noninteractive
