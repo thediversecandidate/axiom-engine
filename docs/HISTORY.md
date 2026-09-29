@@ -1,6 +1,6 @@
 # History (not loaded by default; read only when a task needs it)
 
-## Stage 1 (in progress, branch `stage-1-triangle`)
+## Stage 1 (merged in PR #2, 2026-09-29)
 
 ### Steps verified in CI (all three presets + checks, Clang 21)
 * 1a `VulkanInstance` + validation sink

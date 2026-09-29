@@ -1,14 +1,13 @@
 # STATE
 
 ## Current
-* **Stage:** 1 (Vertical Slice), branch `stage-1-triangle`. Stage 0 merged (see `docs/HISTORY.md`).
-* **Done in Stage 1:** steps 1a–7c (instance, device, allocator, offscreen target, shaders, triangle pipeline, landmark/coverage, culling and reference-image tests, instance extensions + device presentation, `Swapchain` in `renderer_present`, SDL3 `axiom_triangle` app); per-step detail in `docs/HISTORY.md`.
-* **Next atomic step:** open the Stage 1 PR (`stage-1-triangle` → `main`) with the acceptance checklist mapped to tests; merge when CI is green. Then Stage 2 per ROADMAP.
-* **Remaining Stage 1 steps:** Derrick runs `axiom_triangle` in a real window once (README) and reports what he sees; not a merge blocker (CI covers the offscreen path).
+* **Stage:** 2 (Math), branch `stage-2-math` (create from `main`). Stages 0 and 1 merged (see `docs/HISTORY.md`).
+* **Next atomic step:** 2a — `Vector3` (12 bytes) and `Vector4` (`alignas(16)`) with scalar operations, `tryNormalize` (empty for zero-length and non-finite input), and their tests (math; CONVENTIONS §3 + §4 CPU types).
+* **Remaining Stage 2 steps (proposed):** 2b `Matrix4`; 2c `Quaternion` + known-answer rotations; 2d `Transform` + ordering tests; 2e accumulation tests; 2f AVX2 paths equal to scalar; 2g 10,000-case quaternion/matrix agreement.
 * **Sizing rule (found in step 1):** new code per session must fit the working room (3,268 tokens ≈ 10 KB at the fallback rate), so steps are split to about one source file plus its test.
 
 ## Last modified
-`modules/app` (`axiom_triangle`, smoke test `app.triangle_smoke`); `cmake/Dependencies.cmake` (SDL3 static, video only); README run instructions; reference image approved.
+Stage 1 merged (PR #2); details in `docs/HISTORY.md`.
 
 ## Open items
 * **Stale remote branches (delete in GitHub; this session gets 403):** `ci-probe-image-upload` (deliberate sabotage used to verify the CI image upload; never merge), `stage-0-tooling` (merged).
