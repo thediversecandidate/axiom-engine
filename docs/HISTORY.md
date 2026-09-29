@@ -1,5 +1,10 @@
 # History (not loaded by default; read only when a task needs it)
 
+## Stage 2 (in progress, branch `stage-2-math`)
+
+### Steps verified in CI
+* 2a `Vector3` (12 bytes) / `Vector4` (`alignas(16)`): arithmetic, dot, right-handed cross, overflow/underflow-safe `length`, `tryNormalize` (empty for non-finite or length < 1e-12), `normalized` asserted via math-private `AXIOM_MATH_ASSERT` (math cannot use core); fixture aborts in debug/asan-ubsan and returns zero in release; 10,000 seeded vectors normalize to unit length within 1e-6; a naive-length sabotage fails 3 checks
+
 ## Stage 1 (merged in PR #2, 2026-09-29)
 
 ### Steps verified in CI (all three presets + checks, Clang 21)
