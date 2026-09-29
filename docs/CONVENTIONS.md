@@ -4,8 +4,8 @@ Changing anything here requires an ADR in `docs/adr/`. Section loading rules are
 
 ## 1. Toolchain, Build & CI
 * **Project / namespace:** Axiom, `axiom::` (`core math physics renderer ai app`). License MIT.
-* **Compiler:** Clang 21 (`clang-21`/`clang++-21`), C++23. **Standard library:** libc++ 21.
-* **Toolchain file** `cmake/toolchain-clang21.cmake` is loaded by every preset before `project()`: sets the compilers and applies `-stdlib=libc++ -march=x86-64-v3` to ALL C++ compilation and linking, FetchContent code included. A Stage 0 test asserts `_LIBCPP_VERSION` in engine and test code.
+* **Compiler:** Clang 21 (`clang-21`/`clang++-21`), C++23. **Standard library:** libstdc++ from GCC 15 (`libstdc++-15-dev`), the library every Linux Vulkan layer, driver and plugin uses (ADR-0004; libc++ is forbidden).
+* **Toolchain file** `cmake/toolchain-clang21.cmake` is loaded by every preset before `project()`: sets the compilers and applies `-stdlib=libstdc++ -march=x86-64-v3` to ALL C++ compilation, FetchContent code included. A Stage 0 test asserts engine and tests see the same `__GLIBCXX__` and never `_LIBCPP_VERSION`.
 * **Forbidden:** `-ffast-math`, `-ffp-model=fast`.
 * **Presets:** `debug`, `asan-ubsan`, `release`; CI builds and tests all three on every push.
 * **Sanitizers (`asan-ubsan`):** `-fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer` on all code; runtimes linked into every executable.
@@ -13,7 +13,7 @@ Changing anything here requires an ADR in `docs/adr/`. Section loading rules are
   * `lsan.supp` starts empty. An entry is allowed only for an identified external defect, matched on a specific function (never a whole library), with a reproducer and a tracking link in its comment.
 * **CI image:** all CI jobs run in `ci/Dockerfile` (Ubuntu 26.04), published to GHCR and referenced by digest. Every apt package is pinned through a dated Ubuntu snapshot (`apt --snapshot`), and the exact resolved versions are recorded in `/opt/axiom-ci/packages.lock` (ADR-0002). Changing the snapshot, base image or package list requires an ADR.
 * **Local-only compiler override:** a machine without Clang 21 may configure with `-DAXIOM_CLANG_VERSION=<major> -DAXIOM_ALLOW_UNPINNED_COMPILER=ON` for development. CI never sets it, and results from it do not satisfy the Definition of Done.
-* **Apt packages (`ci/packages.txt`):** `git clang-21 libc++-21-dev libc++abi-21-dev libclang-rt-21-dev clang-format-21 cmake ninja-build python3 libvulkan-dev vulkan-tools vulkan-validationlayers mesa-vulkan-drivers glslc spirv-cross`, plus SDL3 build dependencies.
+* **Apt packages (`ci/packages.txt`):** `git clang-21 libstdc++-15-dev libclang-rt-21-dev clang-format-21 cmake ninja-build python3 libvulkan-dev vulkan-tools vulkan-validationlayers mesa-vulkan-drivers glslc spirv-cross`, plus SDL3 build dependencies.
 * **FetchContent** (`find_package(Git REQUIRED)` runs first; `GIT_TAG` = full commit hash with the tag in a comment; `SYSTEM` on every declare): SDL3 `release-3.4.16`, VulkanMemoryAllocator `v3.4.0`, cgltf `v1.15`, Catch2 `v3.16.0`; Stage 3 adds stb (`stb_image.h`) and MikkTSpace (`3e895b49`); Stage 6 adds ONNX Runtime `v1.30.0` (MIT).
 * **Single-header libraries:** each has an `INTERFACE` target (SYSTEM includes) plus exactly one implementation `.cpp` in its own static library (`vma_impl.cpp` → `VMA_IMPLEMENTATION`, `cgltf_impl.cpp` → `CGLTF_IMPLEMENTATION`, `stb_image_impl.cpp` → `STB_IMAGE_IMPLEMENTATION`). No other file defines these macros.
 * **Python tools:** pinned in `scripts/requirements.txt`. Training code has its own `training/requirements.txt` and is never part of the engine build.

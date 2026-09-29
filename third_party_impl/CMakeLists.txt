@@ -1,5 +1,5 @@
 # Exactly one implementation translation unit per single-header library (CONVENTIONS §1).
-# These are third-party code: no -Werror, but the same toolchain flags (libc++, x86-64-v3).
+# These are third-party code: no -Werror, but the same toolchain flags (libstdc++, x86-64-v3).
 
 add_library(axiom_vma_impl STATIC vma_impl.cpp)
 target_link_libraries(axiom_vma_impl PUBLIC axiom_vma_headers)

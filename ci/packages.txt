@@ -1,8 +1,7 @@
 ca-certificates
 git
 clang-21
-libc++-21-dev
-libc++abi-21-dev
+libstdc++-15-dev
 libclang-rt-21-dev
 clang-format-21
 cmake
@@ -15,3 +14,11 @@ vulkan-validationlayers
 mesa-vulkan-drivers
 glslc
 spirv-cross
+pkgconf
+libx11-dev
+libxext-dev
+libwayland-dev
+libxkbcommon-dev
+wayland-protocols
+libegl-dev
+libdecor-0-dev

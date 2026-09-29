@@ -4,8 +4,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <version>
 
-#if !defined(_LIBCPP_VERSION)
-#error "Tests must be built against libc++ (CONVENTIONS §1)"
+#if !defined(__GLIBCXX__) || defined(_LIBCPP_VERSION)
+#error "Tests must be built against libstdc++, never libc++ (CONVENTIONS §1, ADR-0004)"
 #endif
 
 using axiom::core::ErrorCode;
@@ -25,9 +25,9 @@ TEST_CASE("engine library is built without exceptions or RTTI", "[core][stage0]"
   CHECK_FALSE(axiom::core::engineBuiltWithRtti());
 }
 
-TEST_CASE("engine and tests are built against libc++", "[core][stage0]") {
-  CHECK(axiom::core::engineLibcxxVersion() > 0);
-  CHECK(axiom::core::engineLibcxxVersion() == _LIBCPP_VERSION);
+TEST_CASE("engine and tests are built against the same libstdc++", "[core][stage0]") {
+  CHECK(axiom::core::engineLibstdcxxVersion() > 0);
+  CHECK(axiom::core::engineLibstdcxxVersion() == __GLIBCXX__);
 }
 
 TEST_CASE("Result carries either a value or an Error", "[core]") {
