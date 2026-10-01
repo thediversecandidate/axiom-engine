@@ -4,6 +4,7 @@
 
 ### Steps verified in CI
 * 2a `Vector3` (12 bytes) / `Vector4` (`alignas(16)`): arithmetic, dot, right-handed cross, overflow/underflow-safe `length`, `tryNormalize` (empty for non-finite or length < 1e-12), `normalized` asserted via math-private `AXIOM_MATH_ASSERT` (math cannot use core); fixture aborts in debug/asan-ubsan and returns zero in release; 10,000 seeded vectors normalize to unit length within 1e-6; a naive-length sabotage fails 3 checks
+* 2b `Matrix4` (column-major, `alignas(16)`): translation/scale, `a·b` applies b first (hand-computed), point vs direction, transpose, double-precision determinant and `tryInverse` (empty for non-finite input, zero determinant or non-finite result; no absolute cutoff, so a 1e-30 scale inverts and a 1e-39 scale is rejected); CONVENTIONS §4 projection maps near to 1 and far toward 0; 10,000 seeded matrices satisfy M·M⁻¹ = I and (AB)⁻¹ = B⁻¹A⁻¹; a swapped-order sabotage fails 4 checks
 
 ## Stage 1 (merged in PR #2, 2026-09-29)
 

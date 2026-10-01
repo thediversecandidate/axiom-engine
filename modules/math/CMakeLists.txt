@@ -1,5 +1,5 @@
-axiom_add_module(math SOURCES src/scalar.cpp src/vector.cpp)
-axiom_add_module_tests(math SOURCES tests/test_math.cpp tests/test_vector.cpp)
+axiom_add_module(math SOURCES src/scalar.cpp src/vector.cpp src/matrix.cpp)
+axiom_add_module_tests(math SOURCES tests/test_math.cpp tests/test_vector.cpp tests/test_matrix.cpp)
 
 # normalized() asserts on invalid input in debug and asan-ubsan; in release the assert is compiled out.
 find_package(Python3 REQUIRED COMPONENTS Interpreter)

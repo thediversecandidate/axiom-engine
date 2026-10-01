@@ -1,6 +1,33 @@
 # Module `math` — public API
 Depends on: none
 
+## `modules/math/include/axiom/math/matrix.hpp` — Matrix4 — CONVENTIONS §3: column-major `float data[16]`, column vectors (v' = M·v), M_total = P·V·W;
+- `struct alignas(16) Matrix4`
+  - `float data[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}`
+  - `[[nodiscard]] constexpr float at(int row, int column) const noexcept`
+  - `[[nodiscard]] constexpr Vector4 column(int c) const noexcept`
+  - `[[nodiscard]] static constexpr Matrix4 identity() noexcept`
+  - `[[nodiscard]] static constexpr Matrix4 fromColumns(Vector4 c0, Vector4 c1, Vector4 c2, Vector4 c3) noexcept`
+  - `[[nodiscard]] static constexpr Matrix4 translation(Vector3 t) noexcept`
+  - `[[nodiscard]] static constexpr Matrix4 scale(Vector3 s) noexcept`
+- `[[nodiscard]] constexpr Matrix4 operator*(const Matrix4 &a, const Matrix4 &b) noexcept`
+  /// a·b: applies b first, then a.
+- `[[nodiscard]] constexpr Vector4 operator*(const Matrix4 &m, Vector4 v) noexcept`
+- `[[nodiscard]] constexpr Vector3 transformPoint(const Matrix4 &m, Vector3 p) noexcept`
+  /// M·(p, 1) without the perspective divide (for affine transforms).
+- `[[nodiscard]] constexpr Vector3 transformDirection(const Matrix4 &m, Vector3 d) noexcept`
+  /// M·(d, 0): translation does not apply.
+- `[[nodiscard]] constexpr Matrix4 transpose(const Matrix4 &m) noexcept`
+- `[[nodiscard]] float determinant(const Matrix4 &m) noexcept`
+  /// Computed in double precision, rounded to float.
+- `[[nodiscard]] std::optional<Matrix4> tryInverse(const Matrix4 &m) noexcept`
+  /// Inverse computed in double precision. Empty if the input is non-finite, the determinant is exactly zero,
+  /// or the result is non-finite. Conditioning limits for world transforms (rcond∞, CONVENTIONS §4) are applied
+  /// by the transform validation, not here.
+- `[[nodiscard]] bool isFinite(const Matrix4 &m) noexcept`
+- `[[nodiscard]] bool approxEqual(const Matrix4 &a, const Matrix4 &b, float tolerance = kDefaultTolerance) noexcept`
+  /// Element-wise approxEqual (absolute near zero, relative above magnitude 1).
+
 ## `modules/math/include/axiom/math/scalar.hpp` — Scalar helpers. The math module depends on nothing (CONTEXT_RULES §1); fallible math APIs
 - `inline constexpr float kPi = 3.14159265358979323846f`
 - `inline constexpr float kTwoPi = 2.0f * kPi`
